@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Santa's Scavenger Hunt</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    font-family: 'Cinzel Decorative', serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    background: radial-gradient(circle, #000000, #111111);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  #prompt {
+    font-size: 36px;
+    margin-bottom: 18px;
+    text-shadow: 3px 3px 8px black;
+  }
+
+  #introText {
+    display: none;
+    font-size: 32px;
+    margin-bottom: 25px;
+    line-height: 1.4;
+  }
+
+  input {
+    font-size: 22px;
+    padding: 14px;
+    border-radius: 14px;
+    border: 2px solid white;
+    background: black;
+    color: white;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  button {
+    font-size: 22px;
+    padding: 14px 28px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(to right, #b30000, #ff0000);
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(255,255,255,0.4);
+  }
+
+  #timer {
+    display: none;
+    font-size: 76px;
+    margin-top: 10px;
+    text-shadow: 4px 4px 10px black;
+  }
+
+  #message {
+    display: none;
+    font-family: 'Dancing Script', cursive;
+    font-size: 34px;
+    line-height: 1.6;
+    background: rgba(0,0,0,0.85);
+    border: 3px solid white;
+    padding: 28px;
+    border-radius: 18px;
+    margin-top: 30px;
+    animation: pop 1s ease forwards;
+    line-height: 1.5;
+    cursor: pointer;
+  }
+
+  #tapHint {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 18px;
+    opacity: 0.75;
+    margin-top: 15px;
+  }
+
+  #coords {
+    display: none;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 28px;
+    margin-top: 18px;
+  }
+
+  #signature {
+    font-family: 'Dancing Script', cursive;
+    font-size: 32px;
+    margin-top: 30px;
+  }
+
+  @keyframes pop {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<div id="prompt">🎅 Enter Santa’s Code 🎁</div>
+
+<input type="password" id="passwordInput" placeholder="Secret Code">
+
+<button id="startBtn">Unlock the Magic ❄️</button>
+
+<div id="introText">
+  You found the code.<br>
+  Time will now take care of the rest.
+</div>
+
+<div id="timer"></div>
+
+<div id="message">
+  🎄 <b>Ho ho ho…</b> 🎄<br><br>
+  Time has gently opened the way forward.<br>
+  What was meant to wait, has waited.<br><br>
+  <i>“Some doors don’t open with keys.<br>
+  They open with patience.”</i>
+
+  <div id="tapHint">— tap to reveal the final clue —</div>
+
+  <div id="coords">
+    N 30.52233<br>
+    W 96.21953
+  </div>
+
+  <div id="signature">
+    — Santa 🎅
+  </div>
+</div>
+
+<canvas id="snow"></canvas>
+
+<audio id="jingle">
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5c34b1a4b2.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+/* -------- CUSTOMIZE HERE -------- */
+const CORRECT_CODE = "CLAUS2519";
+const END_TIME = new Date("2025-12-27T10:00:00").getTime();
+/* -------------------------------- */
+
+// Elements
+const promptEl = document.getElementById("prompt");
+const inputEl = document.getElementById("passwordInput");
+const btnEl = document.getElementById("startBtn");
+const introEl = document.getElementById("introText");
+const timerEl = document.getElementById("timer");
+const messageEl = document.getElementById("message");
+const coordsEl = document.getElementById("coords");
+const tapHintEl = document.getElementById("tapHint");
+const jingleEl = document.getElementById("jingle");
+
+// Unlock
+btnEl.addEventListener("click", checkCode);
+
+function checkCode() {
+  if (inputEl.value === CORRECT_CODE) {
+    promptEl.style.display = "none";
+    inputEl.style.display = "none";
+    btnEl.style.display = "none";
+
+    introEl.style.display = "block";
+
+    setTimeout(() => {
+      introEl.style.display = "none";
+      startTimer();
+    }, 2500);
+  } else {
+    alert("❄️ That code is not on Santa’s list ❄️");
+  }
+}
+
+// Timer
+function startTimer() {
+  timerEl.style.display = "block";
+
+  const interval = setInterval(() => {
+    const now = Date.now();
+    let totalSeconds = Math.floor((END_TIME - now) / 1000);
+
+    if (totalSeconds <= 0) {
+      clearInterval(interval);
+      timerEl.style.display = "none";
+      messageEl.style.display = "block";
+      jingleEl.play().catch(() => {});
+      startSnow();
+      return;
+    }
+
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    timerEl.textContent =
+      days + "d " +
+      hours + "h " +
+      minutes + "m " +
+      seconds + "s";
+  }, 1000);
+}
+
+// Reveal coordinates on tap
+messageEl.addEventListener("click", () => {
+  coordsEl.style.display = "block";
+  tapHintEl.style.display = "none";
+});
+
+// ❄️ Snow
+function startSnow() {
+  const canvas = document.getElementById("snow");
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const flakes = Array.from({ length: 200 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 3 + 1,
+    d: Math.random() * 1 + 0.5
+  }));
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "white";
+    flakes.forEach(f => {
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+      ctx.fill();
+      f.y += f.d;
+      if (f.y > canvas.height) {
+        f.y = 0;
+        f.x = Math.random() * canvas.width;
+      }
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+</script>
+
+</body>
+</html>
