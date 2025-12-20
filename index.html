@@ -115,27 +115,27 @@
 </head>
 <body>
 
-<div id="prompt">🎅 Enter Santa’s Code 🎁</div>
+<div id="prompt">🎅 Santa Needs Your Key 🎁</div>
 
-<input type="password" id="passwordInput" placeholder="Secret Code">
+<input type="password" id="passwordInput" placeholder="Enter Key">
 
-<button id="startBtn">Unlock the Magic ❄️</button>
+<button id="startBtn">Turn the key🔑</button>
 
 <div id="introText">
-  You found the code.<br>
-  Time will now take care of the rest.
+  Take a seat….<br>
+  The best is worth waiting for.
 </div>
 
 <div id="timer"></div>
 
 <div id="message">
   🎄 <b>Ho ho ho…</b> 🎄<br><br>
-  Time has gently opened the way forward.<br>
-  What was meant to wait, has waited.<br><br>
+  There you are.<br>
+  Patience has a way of making good moments even better.<br><br>
   <i>“Some doors don’t open with keys.<br>
   They open with patience.”</i>
 
-  <div id="tapHint">— tap to reveal the final clue —</div>
+  <div id="tapHint">— tap to reveal the last clue —</div>
 
   <div id="coords">
     N 30.52233<br>
@@ -156,7 +156,7 @@
 <script>
 /* -------- CUSTOMIZE HERE -------- */
 const CORRECT_CODE = "CLAUS2519";
-const END_TIME = new Date("2025-12-27T10:00:00").getTime();
+const END_TIME = new Date("2025-12-19T20:30:00").getTime();
 /* -------------------------------- */
 
 // Elements
@@ -186,7 +186,7 @@ function checkCode() {
       startTimer();
     }, 2500);
   } else {
-    alert("❄️ That code is not on Santa’s list ❄️");
+    alert("Nope! You are using the wrong key😒. Try again! ");
   }
 }
 
@@ -261,6 +261,7 @@ function startSnow() {
 
 </body>
 </html>
+
 
 
 
